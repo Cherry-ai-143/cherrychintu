@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Compare - Grocery Price Comparison</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav id="navbar" class="navbar">
+    <div class="container flex justify-between items-center">
+      <a href="#" class="logo">
+        Smart <span class="logo-highlight">Compare</span>
+      </a>
+      <div class="nav-links">
+        <a href="#" class="nav-link">Home</a>
+        <a href="#" class="nav-link">Categories</a>
+        <a href="#" class="nav-link">Deals</a>
+        <a href="#" class="nav-link">About</a>
+      </div>
+      <div class="nav-actions">
+        <button id="search-toggle" class="btn-icon" aria-label="Search">
+          🔍
+        </button>
+        <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme">
+          🌙
+        </button>
+        <button class="btn btn-outline hidden-md">Sign In</button>
+        <button class="btn hidden-md">Get Started</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <section class="hero-section">
+      <div class="container text-center">
+        <h1 class="hero-title">
+          Compare Grocery Prices<br />
+          <span class="highlight-text">Save Money Every Day</span>
+        </h1>
+        <p class="hero-subtitle">
+          Get the best deals across Blinkit, Zepto, and Instamart in seconds.
+          No more switching between apps to find the best price!
+        </p>
+        <a href="#search-section" class="btn btn-primary btn-bounce">Start Comparing ↓</a>
+      </div>
+    </section>
+
+    <section id="search-section" class="search-section">
+      <div class="container">
+        <h2 class="section-title">Search & Compare</h2>
+        <form id="search-form" class="search-form">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Search for grocery products..."
+            autocomplete="off"
+            aria-label="Search for grocery products"
+          />
+          <button type="submit" class="btn btn-outline">Compare</button>
+        </form>
+        <div id="loading" class="loading hidden">Loading comparisons...</div>
+        <div id="comparison-results" class="comparison-results hidden"></div>
+      </div>
+    </section>
+
+    <section class="featured-deals-section">
+      <div class="container">
+        <h2 class="section-title">Today's Best Deals</h2>
+        <p class="section-subtitle">
+          Hand-picked deals with the biggest savings across platforms
+        </p>
+        <div id="featured-deals" class="deals-grid"></div>
+        <div class="text-center">
+          <button class="btn btn-lg">View All Deals</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="categories-section">
+      <div class="container">
+        <h2 class="section-title">Browse Categories</h2>
+        <p class="section-subtitle">
+          Find deals by category and save on your entire grocery list
+        </p>
+        <div id="categories" class="categories-grid"></div>
+      </div>
+    </section>
+
+    <section class="how-it-works-section">
+      <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">
+          Simple steps to save money on your grocery shopping
+        </p>
+        <div class="steps-grid">
+          <div class="step">
+            <div class="step-number">1</div>
+            <h3>Search Products</h3>
+            <p>Enter the product you're looking for in the search bar</p>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <h3>Compare Prices</h3>
+            <p>View pricing across Blinkit, Zepto, and Instamart side by side</p>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <h3>Choose the Best Deal</h3>
+            <p>Select the best option based on price, delivery time, and offers</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="container text-center">
+        <h2>Ready to save money on groceries?</h2>
+        <p>
+          Join thousands of smart shoppers who save time and money every day with Smart Compare
+        </p>
+        <button class="btn btn-lg btn-primary">Get Started for Free</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="#" class="logo">
+          Smart <span class="logo-highlight">Compare</span>
+        </a>
+        <p>
+          Compare grocery prices across multiple delivery platforms and save money on your everyday shopping.
+        </p>
+      </div>
+      <div>
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="#">How it works</a></li>
+          <li><a href="#">Supported stores</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Legal</h3>
+        <ul>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; <span id="footer-year"></span> Smart Compare. All rights reserved.
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

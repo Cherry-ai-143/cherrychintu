@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Category Items - Smart Compare</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav id="navbar" class="navbar">
+    <div class="container flex justify-between items-center">
+      <a href="index.html" class="logo">
+        Smart <span class="logo-highlight">Compare</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <section class="category-items-section">
+      <div class="container">
+        <h2 id="category-title" class="section-title">Category Items</h2>
+        <div id="category-items" class="products-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="index.html" class="logo">
+          Smart <span class="logo-highlight">Compare</span>
+        </a>
+        <p>
+          Compare grocery prices across multiple delivery platforms and save money on your everyday shopping.
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; <span id="footer-year"></span> Smart Compare. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    // Mock products data (same as in script.js)
+    const mockProducts = [
+      {
+        id: "p1",
+        name: "Fresh Organic Bananas (6 pcs)",
+        image: "https://images.unsplash.com/photo-1560522361-23b37e4ad4a7",
+        price: 45,
+        originalPrice: 55,
+        weight: "600-700g (approx.)",
+        platform: "blinkit",
+        deliveryTime: "10 min",
+        inStock: true,
+        isBestDeal: true,
+        category: "fruits"
+      },
+      {
+        id: "p4",
+        name: "Amul Toned Milk",
+        image: "https://images.unsplash.com/photo-1550583724-b2692b85b150",
+        price: 68,
+        weight: "1L",
+        platform: "blinkit",
+        deliveryTime: "10 min",
+        inStock: true,
+        category: "dairy"
+      },
+      {
+        id: "p6",
+        name: "Britannia Good Day Biscuits",
+        image: "https://images.unsplash.com/photo-1565076819-e8a8773b58e0",
+        price: 30,
+        weight: "200g",
+        platform: "blinkit",
+        deliveryTime: "12 min",
+        originalPrice: 40,inStock: true,
+        category: "dairy",
+      },
+      {
+        id: "p7",
+        name: "Lays Chips",
+        image: "https://images.unsplash.com/photo-1550568238-c61d6d8c4c7e",
+        price: 35,
+        weight: "100g",
+        platform: "nowkart",
+        deliveryTime: "15 min",
+        inStock: true,
+        category: "snacks",
+      },
+      {
+        id: "p8",
+        name: "Tata Salt",
+        image: "https://images.unsplash.com/photo-1550466974-2cf34f1c64d6",
+        price: 20,
+        weight: "1kg",
+        platform: "ziplinemart",
+        deliveryTime: "20 min",
+        inStock: true,
+        category: "staples",
+      },
+
+     {
+        id: "p9",
+        name: "Dove Soap",
+        image: "https://images.unsplash.com/photo-1593075391145-b8a32d09c432",
+        price: 45,
+        weight: "100g",
+        platform: "zepto",
+        deliveryTime: "10 min",
+        inStock: true,
+        category: "personal",
+      },
+     {
+        id: "p10",
+        name: "Fairy Dishwash Liquid",
+        image: "https://images.unsplash.com/photo-1550629644-620245535ae3",
+        price: 60,
+        weight: "500ml",
+        platform: "nowkart",
+        deliveryTime: "15 min",
+        inStock: true,
+        category: "household",
+        },
+];
+
+
+    const categories = [
+      { id: "fruits", name: "Fruits & Vegetables" },
+      { id: "dairy", name: "Dairy & Breakfast" },
+      { id: "snacks", name: "Snacks & Beverages" },
+      { id: "staples", name: "Staples & Groceries" },
+      { id: "personal", name: "Personal Care" },
+      { id: "household", name: "Household Items" },
+    ];
+
+    // Utility to get query parameter
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    // Create product card element (similar to script.js)
+    function createProductCard(product) {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      if (product.isBestDeal) card.classList.add('best-deal');
+
+      const bestDealBadge = document.createElement('div');
+      bestDealBadge.className = 'best-deal-badge';
+      bestDealBadge.textContent = 'BEST DEAL';
+      card.appendChild(bestDealBadge);
+
+      const imgContainer = document.createElement('div');
+      imgContainer.className = 'product-image-container';
+      const img = document.createElement('img');
+      img.src = product.image;
+      img.alt = product.name;
+      imgContainer.appendChild(img);
+      card.appendChild(imgContainer);
+
+      const info = document.createElement('div');
+      info.className = 'product-info';
+
+      const name = document.createElement('h3');
+      name.className = 'product-name';
+      name.textContent = product.name;
+      info.appendChild(name);
+
+      const weight = document.createElement('p');
+      weight.className = 'product-weight';
+      weight.textContent = product.weight;
+      info.appendChild(weight);
+
+      const priceInfo = document.createElement('div');
+      priceInfo.className = 'price-info';
+
+      const priceTag = document.createElement('span');
+      priceTag.className = 'price-tag';
+      priceTag.textContent = `₹${product.price}`;
+      priceInfo.appendChild(priceTag);
+
+      if (product.originalPrice) {
+        const originalPrice = document.createElement('span');
+        originalPrice.className = 'original-price';
+        originalPrice.textContent = `₹${product.originalPrice}`;
+        priceInfo.appendChild(originalPrice);
+
+        const discount = document.createElement('span');
+        discount.className = 'discount-percentage';
+        const discountPercent = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+        discount.textContent = `${discountPercent}% off`;
+        priceInfo.appendChild(discount);
+      }
+      info.appendChild(priceInfo);
+
+      const delivery = document.createElement('div');
+      delivery.className = 'delivery-info';
+      delivery.textContent = `Delivery: ${product.deliveryTime}`;
+      info.appendChild(delivery);
+
+      const btn = document.createElement('button');
+      btn.className = 'btn-full';
+      btn.disabled = !product.inStock;
+      btn.textContent = product.inStock ? 'View Details' : 'Out of Stock';
+      info.appendChild(btn);
+
+      card.appendChild(info);
+
+      return card;
+    }
+
+    // Render two sample items for the category
+    function renderCategoryItems(categoryId) {
+      const category = categories.find(c => c.id === categoryId);
+      const categoryTitle = document.getElementById('category-title');
+      const categoryItemsDiv = document.getElementById('category-items');
+
+      if (!category) {
+        categoryTitle.textContent = 'Category Not Found';
+        return;
+      }
+
+      categoryTitle.textContent = category.name;
+
+      // Filter products by category
+      const filteredProducts = mockProducts.filter(p => p.category === categoryId);
+
+      // Take first two sample items
+      const sampleItems = filteredProducts.slice(0, 2);
+
+      if (sampleItems.length === 0) {
+        categoryItemsDiv.textContent = 'No items found for this category.';
+        return;
+      }
+
+      categoryItemsDiv.innerHTML = '';
+      sampleItems.forEach(product => {
+        const card = createProductCard(product);
+        categoryItemsDiv.appendChild(card);
+      });
+    }
+
+    // Initialize footer year
+    function initializeFooterYear() {
+      const year = new Date().getFullYear();
+      document.getElementById('footer-year').textContent = year;
+    }
+
+    // On page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const categoryId = getQueryParam('category');
+      renderCategoryItems(categoryId);
+      initializeFooterYear();
+    });
+  </script>
+</body>
+</html>

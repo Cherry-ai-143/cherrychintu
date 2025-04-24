@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Smart Compare - Grocery Price Comparison</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .category-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 0.25rem;
+      transition: background-color 0.3s ease;
+    }
+    .category-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
   <nav id="navbar" class="navbar">
@@ -14,8 +30,9 @@
       </a>
       <div class="nav-links">
         <a href="#" class="nav-link">Home</a>
-        <a href="#" class="nav-link">Categories</a>
+        <a href="category.html" class="nav-link">Categories</a>
         <a href="#" class="nav-link">Deals</a>
+        <a href="cart.html" class="nav-link">Cart</a>
         <a href="#" class="nav-link">About</a>
       </div>
       <div class="nav-actions">
@@ -25,11 +42,122 @@
         <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme">
           🌙
         </button>
-        <button class="btn btn-outline hidden-md">Sign In</button>
-        <button class="btn hidden-md">Get Started</button>
+        <button id="sign-in-btn" class="btn btn-outline hidden-md">Sign In</button>
+        <button id="get-started-btn" class="btn hidden-md">Get Started</button>
+        <div id="user-profile" class="user-profile hidden" tabindex="0" style="cursor:pointer; position: relative;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="border-radius:50%; background:#007bff; color:white;">
+            <path d="M20 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M4 21v-2a4 4 0 0 1 3-3.87"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <div id="profile-dropdown" class="profile-dropdown hidden" style="position:absolute; top:40px; right:0; background:white; border:1px solid #ccc; border-radius:4px; padding:10px; width:150px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+            <p id="profile-username" style="margin:0; font-weight:bold;"></p>
+            <button id="logout-btn" style="margin-top:10px; width:100%; padding:5px; cursor:pointer;">Logout</button>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
+
+  <!-- Cart Icon and Count -->
+  <div id="cart-container" style="position: fixed; top: 10px; right: 10px; cursor: pointer; z-index: 1001;">
+    <svg id="cart-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+      <path d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 .485.379L2.89 5H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 14H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.14 6l1.25 6h7.22l1.25-6H3.14z"/>
+      <circle cx="6" cy="15" r="1"/>
+      <circle cx="12" cy="15" r="1"/>
+    </svg>
+    <span id="cart-count" style="background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.75rem; position: absolute; top: -5px; right: -5px; display: none;">0</span>
+  </div>
+
+  <!-- Cart Modal -->
+  <div id="cart-modal" class="hidden" style="position: fixed; top: 50px; right: 10px; width: 300px; max-height: 400px; overflow-y: auto; background: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1002; padding: 10px;">
+    <h3>Your Cart</h3>
+    <div id="cart-items" style="max-height: 300px; overflow-y: auto;"></div>
+    <div id="cart-total" style="font-weight: bold; margin-top: 10px;">Total: ₹0</div>
+    <button id="close-cart-btn" class="btn btn-outline" style="margin-top: 10px; width: 100%;">Close</button>
+    <button id="checkout-btn" class="btn btn-primary" style="margin-top: 10px; width: 100%;">Checkout</button>
+  </div>
+
+  <!-- Login/Signup Card -->
+  <div id="auth-card" class="auth-card hidden">
+    <div class="auth-content">
+      <h2 id="form-title">Login</h2>
+      <form id="auth-form">
+        <input type="text" id="username" placeholder="Username or Email" required />
+        <input type="email" id="email" placeholder="Email" required style="display:none;" />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit" id="submit-btn">Login</button>
+      </form>
+      <div class="message" id="message"></div>
+      <div class="toggle-link" id="toggle-link">Don't have an account? Sign up</div>
+    </div>
+  </div>
+
+  <style>
+    .auth-card {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      width: 320px;
+      z-index: 1000;
+    }
+    .hidden {
+      display: none;
+    }
+    .auth-content {
+      position: relative;
+    }
+    .auth-content input[type="text"],
+    .auth-content input[type="password"],
+    .auth-content input[type="email"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .auth-content button {
+      width: 100%;
+      padding: 0.5rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .auth-content button:hover {
+      background-color: #0056b3;
+    }
+    .message {
+      margin-top: 1rem;
+      text-align: center;
+      font-weight: bold;
+    }
+    .toggle-link {
+      margin-top: 1rem;
+      text-align: center;
+      cursor: pointer;
+      color: #007bff;
+      text-decoration: underline;
+    }
+    .close-auth {
+      position: absolute;
+      top: 0.25rem;
+      right: 0.25rem;
+      background: transparent;
+      border: none;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+  </style>
 
   <main class="main-content">
     <section class="hero-section">
@@ -83,7 +211,16 @@
         <p class="section-subtitle">
           Find deals by category and save on your entire grocery list
         </p>
-        <div id="categories" class="categories-grid"></div>
+        <div id="categories" class="categories-grid">
+          <a href="category.html?category=fruits" class="category-card" style="text-decoration: none;">Fruits & Vegetables</a>
+          <a href="category.html?category=dairy" class="category-card" style="text-decoration: none;">Dairy & Breakfast</a>
+          <a href="category.html?category=snacks" class="category-card" style="text-decoration: none;">Snacks & Beverages</a>
+          <a href="category.html?category=staples" class="category-card" style="text-decoration: none;">Staples & Groceries</a>
+          <a href="category.html?category=personal" class="category-card" style="text-decoration: none;">Personal Care</a>
+          <a href="category.html?category=household" class="category-card" style="text-decoration: none;">Household Items</a>
+          <a href="category.html?category=toys" class="category-card" style="text-decoration: none;">Toys</a>
+          <a href="category.html?category=electronics" class="category-card" style="text-decoration: none;">Electronics</a>
+        </div>
       </div>
     </section>
 
@@ -157,5 +294,197 @@
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    const signInBtn = document.getElementById('sign-in-btn');
+    const getStartedBtn = document.getElementById('get-started-btn');
+    const userProfile = document.getElementById('user-profile');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    const profileUsername = document.getElementById('profile-username');
+    const logoutBtn = document.getElementById('logout-btn');
+    const authCard = document.getElementById('auth-card');
+    const formTitle = document.getElementById('form-title');
+    const authForm = document.getElementById('auth-form');
+    const usernameInput = document.getElementById('username');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = document.getElementById('submit-btn');
+    const messageDiv = document.getElementById('message');
+    const toggleLink = document.getElementById('toggle-link');
+
+    let isLogin = true;
+    let loggedInUser = null;
+
+    function showAuthCard(login) {
+      isLogin = login;
+      if (isLogin) {
+        formTitle.textContent = 'Login';
+        usernameInput.style.display = 'block';
+        emailInput.style.display = 'none';
+        submitBtn.textContent = 'Login';
+        toggleLink.textContent = "Don't have an account? Sign up";
+      } else {
+        formTitle.textContent = 'Sign Up';
+        usernameInput.style.display = 'block';
+        emailInput.style.display = 'block';
+        submitBtn.textContent = 'Sign Up';
+        toggleLink.textContent = 'Already have an account? Login';
+      }
+      messageDiv.textContent = '';
+      authForm.reset();
+      authCard.classList.remove('hidden');
+    }
+
+    function handleUserAuthentication() {
+      // Hide Sign In and Get Started buttons
+      signInBtn.classList.add('hidden');
+      getStartedBtn.classList.add('hidden');
+
+      // Add login success logo to the navbar
+      const navbar = document.getElementById('navbar');
+      // Remove existing login logo if any
+      const existingLogo = document.getElementById('login-success-logo');
+      if (existingLogo) {
+        existingLogo.remove();
+      }
+      const loginLogo = document.createElement('img');
+      loginLogo.src = '/assets/login-success-logo.png'; // path to your login logo
+      loginLogo.alt = 'User Logged In';
+      loginLogo.id = 'login-success-logo';
+      loginLogo.className = 'h-8 w-8 rounded-full'; // example styling, adjust as needed
+      loginLogo.style.marginLeft = '10px';
+      navbar.appendChild(loginLogo);
+    }
+
+    function updateUIForLoggedInUser(user) {
+      loggedInUser = user;
+      // Hide Sign In and Get Started buttons
+      signInBtn.style.display = 'none';
+      getStartedBtn.style.display = 'none';
+      // Show user profile logo
+      userProfile.style.display = 'inline-block';
+      profileUsername.textContent = user.username;
+      // Call handleUserAuthentication to add login logo
+      handleUserAuthentication();
+    }
+
+    signInBtn.addEventListener('click', () => {
+      showAuthCard(true);
+    });
+
+    getStartedBtn.addEventListener('click', () => {
+      showAuthCard(false);
+    });
+
+    toggleLink.addEventListener('click', () => {
+      console.log('Toggle link clicked. Current isLogin:', isLogin);
+      if (isLogin) {
+        showAuthCard(false);
+        console.log('Switched to Sign Up form');
+      } else {
+        showAuthCard(true);
+        console.log('Switched to Login form');
+      }
+    });
+
+    userProfile.addEventListener('click', () => {
+      profileDropdown.classList.toggle('hidden');
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      loggedInUser = null;
+      signInBtn.style.display = 'inline-block';
+      getStartedBtn.style.display = 'inline-block';
+      userProfile.style.display = 'none';
+      profileDropdown.classList.add('hidden');
+      // Optionally, clear any auth tokens or session here
+    });
+
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      messageDiv.textContent = '';
+      const username = usernameInput.value.trim();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (isLogin) {
+        if (!username || !password) {
+          messageDiv.textContent = 'Please fill in all fields.';
+          return;
+        }
+        // Login
+        try {
+          const response = await fetch('http://localhost:3000/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usernameOrEmail: username, password }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            messageDiv.style.color = 'green';
+            messageDiv.textContent = data.message || 'Login successful!';
+            updateUIForLoggedInUser({ username });
+            authCard.classList.add('hidden');
+            // Hide the auth card form after successful login
+            authCard.style.display = 'none';
+            // Add login success logo
+            handleUserAuthentication();
+          } else {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = data.message || 'Login failed.';
+          }
+        } catch (error) {
+          messageDiv.style.color = 'red';
+          messageDiv.textContent = 'Error connecting to server.';
+        }
+      } else {
+        if (!username || !email || !password) {
+          messageDiv.textContent = 'Please fill in all fields.';
+          return;
+        }
+        // Signup
+        try {
+          const response = await fetch('http://localhost:3000/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            messageDiv.style.color = 'green';
+            messageDiv.textContent = data.message || 'Signup successful! Please login.';
+            showAuthCard(true);
+            authForm.reset();
+            // Hide the auth card form after successful signup
+            authCard.style.display = 'none';
+            // Add login success logo
+            handleUserAuthentication();
+          } else {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = data.message || 'Signup failed.';
+          }
+        } catch (error) {
+          messageDiv.style.color = 'red';
+          messageDiv.textContent = 'Error connecting to server.';
+        }
+      }
+    });
+
+    // Close auth card when clicking outside the auth-content
+    authCard.addEventListener('click', (e) => {
+      if (e.target === authCard) {
+        authCard.classList.add('hidden');
+      }
+    });
+
+    // Add click event to cart icon to navigate to cart.html
+    const cartIcon = document.getElementById('cart-icon');
+    if (cartIcon) {
+      cartIcon.style.cursor = 'pointer';
+      cartIcon.addEventListener('click', () => {
+        console.log('Cart icon clicked, navigating to cart.html');
+        window.location.href = 'cart.html';
+      });
+    }
+  </script>
 </body>
 </html>

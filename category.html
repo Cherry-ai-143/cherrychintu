@@ -3,157 +3,165 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Category Items - Smart Compare</title>
+  <title>Category Products</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 1rem;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    #search-bar {
+      max-width: 600px;
+      margin: 0 auto 1rem auto;
+      display: flex;
+      gap: 0.5rem;
+    }
+    #search-input {
+      flex-grow: 1;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border: 2px solid #d1d5db;
+      border-radius: 0.375rem;
+      transition: border-color 0.2s;
+    }
+    #search-input:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+    #search-button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    #search-button:hover {
+      background-color: #1d4ed8;
+    }
+    #products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .product-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: box-shadow 0.3s ease;
+    }
+    .product-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .product-image-container {
+      width: 100%;
+      padding-top: 75%;
+      position: relative;
+      overflow: hidden;
+    }
+    .product-image-container img {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .product-info {
+      padding: 0.75rem 1rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .product-name {
+      font-size: 1.1rem;
+      margin: 0 0 0.5rem 0;
+      font-weight: bold;
+    }
+    .product-weight {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    .price-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .price-tag {
+      font-weight: bold;
+      color: #007bff;
+      font-size: 1rem;
+    }
+    .original-price {
+      text-decoration: line-through;
+      color: #999;
+      font-size: 0.9rem;
+    }
+    .discount-percentage {
+      color: #28a745;
+      font-size: 0.9rem;
+    }
+    .delivery-info {
+      font-size: 0.85rem;
+      color: #555;
+      margin-bottom: 0.5rem;
+    }
+    .btn-full {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 0.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+      width: 100%;
+      transition: background-color 0.3s ease;
+    }
+    .btn-full:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    .btn-full:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-  <nav id="navbar" class="navbar">
-    <div class="container flex justify-between items-center">
-      <a href="index.html" class="logo">
-        Smart <span class="logo-highlight">Compare</span>
-      </a>
-      <div class="nav-links">
-        <a href="index.html" class="nav-link">Home</a>
-      </div>
-    </div>
-  </nav>
+  <h1 id="category-title">Category Products</h1>
 
-  <main class="main-content">
-    <section class="category-items-section">
-      <div class="container">
-        <h2 id="category-title" class="section-title">Category Items</h2>
-        <div id="category-items" class="products-grid"></div>
-      </div>
-    </section>
-  </main>
+  <div id="search-bar">
+    <input type="text" id="search-input" placeholder="Search products in this category..." aria-label="Search products in this category" />
+    <button id="search-button">Search</button>
+  </div>
 
-  <footer class="footer">
-    <div class="container footer-grid">
-      <div>
-        <a href="index.html" class="logo">
-          Smart <span class="logo-highlight">Compare</span>
-        </a>
-        <p>
-          Compare grocery prices across multiple delivery platforms and save money on your everyday shopping.
-        </p>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      &copy; <span id="footer-year"></span> Smart Compare. All rights reserved.
-    </div>
-  </footer>
+  <div id="products-grid"></div>
 
   <script>
-    // Mock products data (same as in script.js)
-    const mockProducts = [
-      {
-        id: "p1",
-        name: "Fresh Organic Bananas (6 pcs)",
-        image: "https://images.unsplash.com/photo-1560522361-23b37e4ad4a7",
-        price: 45,
-        originalPrice: 55,
-        weight: "600-700g (approx.)",
-        platform: "blinkit",
-        deliveryTime: "10 min",
-        inStock: true,
-        isBestDeal: true,
-        category: "fruits"
-      },
-      {
-        id: "p4",
-        name: "Amul Toned Milk",
-        image: "https://images.unsplash.com/photo-1550583724-b2692b85b150",
-        price: 68,
-        weight: "1L",
-        platform: "blinkit",
-        deliveryTime: "10 min",
-        inStock: true,
-        category: "dairy"
-      },
-      {
-        id: "p6",
-        name: "Britannia Good Day Biscuits",
-        image: "https://images.unsplash.com/photo-1565076819-e8a8773b58e0",
-        price: 30,
-        weight: "200g",
-        platform: "blinkit",
-        deliveryTime: "12 min",
-        originalPrice: 40,inStock: true,
-        category: "dairy",
-      },
-      {
-        id: "p7",
-        name: "Lays Chips",
-        image: "https://images.unsplash.com/photo-1550568238-c61d6d8c4c7e",
-        price: 35,
-        weight: "100g",
-        platform: "nowkart",
-        deliveryTime: "15 min",
-        inStock: true,
-        category: "snacks",
-      },
-      {
-        id: "p8",
-        name: "Tata Salt",
-        image: "https://images.unsplash.com/photo-1550466974-2cf34f1c64d6",
-        price: 20,
-        weight: "1kg",
-        platform: "ziplinemart",
-        deliveryTime: "20 min",
-        inStock: true,
-        category: "staples",
-      },
-
-     {
-        id: "p9",
-        name: "Dove Soap",
-        image: "https://images.unsplash.com/photo-1593075391145-b8a32d09c432",
-        price: 45,
-        weight: "100g",
-        platform: "zepto",
-        deliveryTime: "10 min",
-        inStock: true,
-        category: "personal",
-      },
-     {
-        id: "p10",
-        name: "Fairy Dishwash Liquid",
-        image: "https://images.unsplash.com/photo-1550629644-620245535ae3",
-        price: 60,
-        weight: "500ml",
-        platform: "nowkart",
-        deliveryTime: "15 min",
-        inStock: true,
-        category: "household",
-        },
-];
-
-
-    const categories = [
-      { id: "fruits", name: "Fruits & Vegetables" },
-      { id: "dairy", name: "Dairy & Breakfast" },
-      { id: "snacks", name: "Snacks & Beverages" },
-      { id: "staples", name: "Staples & Groceries" },
-      { id: "personal", name: "Personal Care" },
-      { id: "household", name: "Household Items" },
-    ];
-
     // Utility to get query parameter
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
     }
 
-    // Create product card element (similar to script.js)
+    // Create product card element
     function createProductCard(product) {
       const card = document.createElement('div');
       card.className = 'product-card';
-      if (product.isBestDeal) card.classList.add('best-deal');
-
-      const bestDealBadge = document.createElement('div');
-      bestDealBadge.className = 'best-deal-badge';
-      bestDealBadge.textContent = 'BEST DEAL';
-      card.appendChild(bestDealBadge);
 
       const imgContainer = document.createElement('div');
       imgContainer.className = 'product-image-container';
@@ -173,7 +181,7 @@
 
       const weight = document.createElement('p');
       weight.className = 'product-weight';
-      weight.textContent = product.weight;
+      weight.textContent = product.weight || '';
       info.appendChild(weight);
 
       const priceInfo = document.createElement('div');
@@ -200,13 +208,25 @@
 
       const delivery = document.createElement('div');
       delivery.className = 'delivery-info';
-      delivery.textContent = `Delivery: ${product.deliveryTime}`;
+      delivery.textContent = `Delivery: ${product.deliveryTime || 'N/A'}`;
       info.appendChild(delivery);
 
       const btn = document.createElement('button');
       btn.className = 'btn-full';
       btn.disabled = !product.inStock;
-      btn.textContent = product.inStock ? 'View Details' : 'Out of Stock';
+      btn.textContent = product.inStock ? 'Add to Cart' : 'Out of Stock';
+      if (product.inStock) {
+        btn.addEventListener('click', () => {
+          // Define addToCart function here to call the global addToCart in script.js if available
+          if (window.parent && typeof window.parent.addToCart === 'function') {
+            window.parent.addToCart(product);
+          } else if (typeof addToCart === 'function') {
+            addToCart(product);
+          } else {
+            alert('Add to Cart function not available.');
+          }
+        });
+      }
       info.appendChild(btn);
 
       card.appendChild(info);
@@ -214,49 +234,111 @@
       return card;
     }
 
-    // Render two sample items for the category
-    function renderCategoryItems(categoryId) {
-      const category = categories.find(c => c.id === categoryId);
-      const categoryTitle = document.getElementById('category-title');
-      const categoryItemsDiv = document.getElementById('category-items');
+    let allProducts = [];
 
-      if (!category) {
-        categoryTitle.textContent = 'Category Not Found';
+    async function fetchProductsByCategory(category) {
+      try {
+        let url = '';
+        if (category === 'dairy') {
+          url = 'http://localhost:3000/dairy-products';
+        } else if (category === 'snacks') {
+          url = 'http://localhost:3000/snack-products';
+        } else if (category === 'staples') {
+          url = 'http://localhost:3000/staple-products';
+        } else if (category === 'personal') {
+          url = 'http://localhost:3000/personal-care-products';
+        } else if (category === 'household') {
+          url = 'http://localhost:3000/household-products';
+        } else if (category === 'toys') {
+          url = 'http://localhost:3000/toy-products';
+        } else if (category === 'electronics') {
+          url = 'http://localhost:3000/electronics-products';
+        } else {
+          url = `http://localhost:3000/products?category=${encodeURIComponent(category)}`;
+        }
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const products = await response.json();
+        return products;
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        return [];
+      }
+    }
+
+    function renderProducts(products) {
+      const productsGrid = document.getElementById('products-grid');
+      productsGrid.innerHTML = '';
+
+      if (products.length === 0) {
+        productsGrid.textContent = 'No products found for this category.';
         return;
       }
 
-      categoryTitle.textContent = category.name;
-
-      // Filter products by category
-      const filteredProducts = mockProducts.filter(p => p.category === categoryId);
-
-      // Take first two sample items
-      const sampleItems = filteredProducts.slice(0, 2);
-
-      if (sampleItems.length === 0) {
-        categoryItemsDiv.textContent = 'No items found for this category.';
-        return;
-      }
-
-      categoryItemsDiv.innerHTML = '';
-      sampleItems.forEach(product => {
+      products.forEach(product => {
         const card = createProductCard(product);
-        categoryItemsDiv.appendChild(card);
+        productsGrid.appendChild(card);
       });
     }
 
-    // Initialize footer year
-    function initializeFooterYear() {
-      const year = new Date().getFullYear();
-      document.getElementById('footer-year').textContent = year;
+    function filterAndSortProducts(query) {
+      const lowerQuery = query.toLowerCase();
+      // Products matching the query (name contains query)
+      const matched = allProducts.filter(p => p.name.toLowerCase().includes(lowerQuery));
+      // Products not matching the query
+      const unmatched = allProducts.filter(p => !p.name.toLowerCase().includes(lowerQuery));
+      // Return matched products first, then unmatched
+      return [...matched, ...unmatched];
     }
 
-    // On page load
-    document.addEventListener('DOMContentLoaded', () => {
-      const categoryId = getQueryParam('category');
-      renderCategoryItems(categoryId);
-      initializeFooterYear();
+    async function renderFilteredProducts(query) {
+      if (!query) {
+        renderProducts(allProducts);
+      } else {
+        const filtered = filterAndSortProducts(query);
+        renderProducts(filtered);
+      }
+    }
+
+    async function renderInitialProducts() {
+      const category = getQueryParam('category');
+      if (!category) {
+        document.getElementById('category-title').textContent = 'Category not specified';
+        return;
+      }
+      // Map category id to display name
+      const categoryDisplayNames = {
+        fruits: 'Fruits & Vegetables',
+        dairy: 'Dairy & Breakfast',
+        snacks: 'Snacks & Beverages',
+        staples: 'Staples & Groceries',
+        personal: 'Personal Care',
+        household: 'Household Items',
+        toys: 'Toys',
+        electronics: 'Electronics'
+      };
+      const displayName = categoryDisplayNames[category] || category.charAt(0).toUpperCase() + category.slice(1);
+      document.getElementById('category-title').textContent = `Category: ${displayName}`;
+
+      allProducts = await fetchProductsByCategory(category);
+      renderProducts(allProducts);
+    }
+
+    document.getElementById('search-button').addEventListener('click', () => {
+      const query = document.getElementById('search-input').value.trim();
+      renderFilteredProducts(query);
     });
+
+    document.getElementById('search-input').addEventListener('keyup', (event) => {
+      if (event.key === 'Enter') {
+        const query = event.target.value.trim();
+        renderFilteredProducts(query);
+      }
+    });
+
+    renderInitialProducts();
   </script>
 </body>
 </html>

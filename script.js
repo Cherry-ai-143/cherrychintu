@@ -532,6 +532,179 @@ function createProductCard(product) {
   return card;
 }
 
+// Update UI for logged in user and store userId and username
+function updateUIForLoggedInUser(user) {
+  loggedInUser = user;
+  // Store userId and username in localStorage
+  localStorage.setItem("userId", user.userId);
+  localStorage.setItem("username", user.username);
+
+  // Hide Sign In and Get Started buttons
+  const signInBtn = document.getElementById("sign-in-btn");
+  const getStartedBtn = document.getElementById("get-started-btn");
+  const userProfile = document.getElementById("user-profile");
+  const profileUsername = document.getElementById("profile-username");
+
+  if (signInBtn) signInBtn.style.display = "none";
+  if (getStartedBtn) getStartedBtn.style.display = "none";
+  if (userProfile) userProfile.style.display = "inline-block";
+  if (profileUsername) profileUsername.textContent = user.username;
+
+  // Add login success logo or other UI updates as needed
+  handleUserAuthentication();
+}
+
+// Modify login and signup fetch calls to store userId and username
+async function loginUser(usernameOrEmail, password) {
+  try {
+    const response = await fetch("http://localhost:3000/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usernameOrEmail, password }),
+    });
+    const data = await response.json();
+    if (response.ok) {
+      updateUIForLoggedInUser({ userId: data.userId, username: data.username });
+      return { success: true, message: data.message };
+    } else {
+      return { success: false, message: data.message };
+    }
+  } catch (error) {
+    return { success: false, message: "Error connecting to server." };
+  }
+}
+
+async function signupUser(username, email, password) {
+  try {
+    const response = await fetch("http://localhost:3000/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password }),
+    });
+    const data = await response.json();
+    if (response.ok) {
+      // After signup, prompt user to login
+      return { success: true, message: data.message };
+    } else {
+      return { success: false, message: data.message };
+    }
+  } catch (error) {
+    return { success: false, message: "Error connecting to server." };
+  }
+}
+
+// Update authForm submit handler to use above functions
+document.getElementById("auth-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const usernameInput = document.getElementById("username");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const messageDiv = document.getElementById("message");
+
+  const username = usernameInput.value.trim();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+
+  if (isLogin) {
+    if (!username || !password) {
+      messageDiv.textContent = "Please fill in all fields.";
+      return;
+    }
+    const result = await loginUser(username, password);
+    messageDiv.style.color = result.success ? "green" : "red";
+    messageDiv.textContent = result.message;
+    if (result.success) {
+      authCard.classList.add("hidden");
+    }
+  } else {
+    if (!username || !email || !password) {
+      messageDiv.textContent = "Please fill in all fields.";
+      return;
+    }
+    const result = await signupUser(username, email, password);
+    messageDiv.style.color = result.success ? "green" : "red";
+    messageDiv.textContent = result.message;
+    if (result.success) {
+      showAuthCard(true);
+      authForm.reset();
+    }
+  }
+});
+
+// Update loadCart and saveCart to use stored userId
+async function loadCart() {
+  const storedUserId = localStorage.getItem("userId");
+  if (storedUserId) {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/cart?userId=${storedUserId}`
+      );
+      if (response.ok) {
+        const cartData = await response.json();
+        cart = {};
+        for (const item of cartData) {
+          cart[item.productId] = {
+            id: item.productId,
+            quantity: item.quantity,
+          };
+        }
+        updateCartCount();
+      }
+    } catch (error) {
+      console.error("Error loading cart from backend:", error);
+    }
+  } else {
+    const cartData = localStorage.getItem("cart");
+    if (cartData) {
+      cart = JSON.parse(cartData);
+    } else {
+      cart = {};
+    }
+    updateCartCount();
+  }
+}
+
+async function saveCart() {
+  const storedUserId = localStorage.getItem("userId");
+  if (storedUserId) {
+    try {
+      for (const productId in cart) {
+        const quantity = cart[productId].quantity;
+        await fetch("http://localhost:3000/cart/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: storedUserId,
+            productId,
+            quantity,
+          }),
+        });
+      }
+    } catch (error) {
+      console.error("Error saving cart to backend:", error);
+    }
+  } else {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+}
+
+// Update logout to clear stored userId and username
+document.getElementById("logout-btn").addEventListener("click", () => {
+  loggedInUser = null;
+  localStorage.removeItem("userId");
+  localStorage.removeItem("username");
+  const signInBtn = document.getElementById("sign-in-btn");
+  const getStartedBtn = document.getElementById("get-started-btn");
+  const userProfile = document.getElementById("user-profile");
+
+  if (signInBtn) signInBtn.style.display = "inline-block";
+  if (getStartedBtn) getStartedBtn.style.display = "inline-block";
+  if (userProfile) userProfile.style.display = "none";
+
+  const profileDropdown = document.getElementById("profile-dropdown");
+  if (profileDropdown) profileDropdown.classList.add("hidden");
+});
+
 // Render comparison table
 function renderComparisonTable(products) {
   comparisonResultsDiv.innerHTML = "";

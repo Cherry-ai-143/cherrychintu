@@ -42,8 +42,8 @@
         <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme">
           🌙
         </button>
-        <button id="sign-in-btn" class="btn btn-outline hidden-md">Sign In</button>
-        <button id="get-started-btn" class="btn hidden-md">Get Started</button>
+        <button id="sign-in-btn" class="btn btn-outline">Sign In</button>
+        <button id="get-started-btn" class="btn">Get Started</button>
         <div id="user-profile" class="user-profile hidden" tabindex="0" style="cursor:pointer; position: relative;">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="border-radius:50%; background:#007bff; color:white;">
             <path d="M20 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -295,196 +295,202 @@
 
   <script src="script.js"></script>
   <script>
-    const signInBtn = document.getElementById('sign-in-btn');
-    const getStartedBtn = document.getElementById('get-started-btn');
-    const userProfile = document.getElementById('user-profile');
-    const profileDropdown = document.getElementById('profile-dropdown');
-    const profileUsername = document.getElementById('profile-username');
-    const logoutBtn = document.getElementById('logout-btn');
-    const authCard = document.getElementById('auth-card');
-    const formTitle = document.getElementById('form-title');
-    const authForm = document.getElementById('auth-form');
-    const usernameInput = document.getElementById('username');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const submitBtn = document.getElementById('submit-btn');
-    const messageDiv = document.getElementById('message');
-    const toggleLink = document.getElementById('toggle-link');
+    document.addEventListener('DOMContentLoaded', () => {
+      const signInBtn = document.getElementById('sign-in-btn');
+      const getStartedBtn = document.getElementById('get-started-btn');
+      const userProfile = document.getElementById('user-profile');
+      const profileDropdown = document.getElementById('profile-dropdown');
+      const profileUsername = document.getElementById('profile-username');
+      const logoutBtn = document.getElementById('logout-btn');
+      const authCard = document.getElementById('auth-card');
+      const formTitle = document.getElementById('form-title');
+      const authForm = document.getElementById('auth-form');
+      const usernameInput = document.getElementById('username');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const submitBtn = document.getElementById('submit-btn');
+      const messageDiv = document.getElementById('message');
+      const toggleLink = document.getElementById('toggle-link');
 
-    let isLogin = true;
-    let loggedInUser = null;
+      let isLogin = true;
+      let loggedInUser = null;
 
-    function showAuthCard(login) {
-      isLogin = login;
-      if (isLogin) {
-        formTitle.textContent = 'Login';
-        usernameInput.style.display = 'block';
-        emailInput.style.display = 'none';
-        submitBtn.textContent = 'Login';
-        toggleLink.textContent = "Don't have an account? Sign up";
-      } else {
-        formTitle.textContent = 'Sign Up';
-        usernameInput.style.display = 'block';
-        emailInput.style.display = 'block';
-        submitBtn.textContent = 'Sign Up';
-        toggleLink.textContent = 'Already have an account? Login';
+      function showAuthCard(login) {
+        console.log('showAuthCard called with login:', login);
+        isLogin = login;
+        if (isLogin) {
+          formTitle.textContent = 'Login';
+          usernameInput.style.display = 'block';
+          emailInput.style.display = 'none';
+          submitBtn.textContent = 'Login';
+          toggleLink.textContent = "Don't have an account? Sign up";
+        } else {
+          formTitle.textContent = 'Sign Up';
+          usernameInput.style.display = 'block';
+          emailInput.style.display = 'block';
+          submitBtn.textContent = 'Sign Up';
+          toggleLink.textContent = 'Already have an account? Login';
+        }
+        messageDiv.textContent = '';
+        authForm.reset();
+        authCard.style.display = '';
+        authCard.classList.remove('hidden');
       }
-      messageDiv.textContent = '';
-      authForm.reset();
-      authCard.classList.remove('hidden');
-    }
 
-    function handleUserAuthentication() {
-      // Hide Sign In and Get Started buttons
-      signInBtn.classList.add('hidden');
-      getStartedBtn.classList.add('hidden');
+      function handleUserAuthentication() {
+        // Hide Sign In and Get Started buttons
+        signInBtn.classList.add('hidden');
+        getStartedBtn.classList.add('hidden');
 
-      // Add login success logo to the navbar
-      const navbar = document.getElementById('navbar');
-      // Remove existing login logo if any
-      const existingLogo = document.getElementById('login-success-logo');
-      if (existingLogo) {
-        existingLogo.remove();
+        // Add login success logo to the navbar
+        const navbar = document.getElementById('navbar');
+        // Remove existing login logo if any
+        const existingLogo = document.getElementById('login-success-logo');
+        if (existingLogo) {
+          existingLogo.remove();
+        }
+        const loginLogo = document.createElement('img');
+        loginLogo.src = '/assets/login-success-logo.png'; // path to your login logo
+        loginLogo.alt = 'User Logged In';
+        loginLogo.id = 'login-success-logo';
+        loginLogo.className = 'h-8 w-8 rounded-full'; // example styling, adjust as needed
+        loginLogo.style.marginLeft = '10px';
+        navbar.appendChild(loginLogo);
       }
-      const loginLogo = document.createElement('img');
-      loginLogo.src = '/assets/login-success-logo.png'; // path to your login logo
-      loginLogo.alt = 'User Logged In';
-      loginLogo.id = 'login-success-logo';
-      loginLogo.className = 'h-8 w-8 rounded-full'; // example styling, adjust as needed
-      loginLogo.style.marginLeft = '10px';
-      navbar.appendChild(loginLogo);
-    }
 
-    function updateUIForLoggedInUser(user) {
-      loggedInUser = user;
-      // Hide Sign In and Get Started buttons
-      signInBtn.style.display = 'none';
-      getStartedBtn.style.display = 'none';
-      // Show user profile logo
-      userProfile.style.display = 'inline-block';
-      profileUsername.textContent = user.username;
-      // Call handleUserAuthentication to add login logo
-      handleUserAuthentication();
-    }
+      function updateUIForLoggedInUser(user) {
+        loggedInUser = user;
+        // Hide Sign In and Get Started buttons
+        signInBtn.style.display = 'none';
+        getStartedBtn.style.display = 'none';
+        // Show user profile logo
+        userProfile.style.display = 'inline-block';
+        profileUsername.textContent = user.username;
+        // Call handleUserAuthentication to add login logo
+        handleUserAuthentication();
+      }
 
-    signInBtn.addEventListener('click', () => {
-      showAuthCard(true);
-    });
-
-    getStartedBtn.addEventListener('click', () => {
-      showAuthCard(false);
-    });
-
-    toggleLink.addEventListener('click', () => {
-      console.log('Toggle link clicked. Current isLogin:', isLogin);
-      if (isLogin) {
-        showAuthCard(false);
-        console.log('Switched to Sign Up form');
-      } else {
+      signInBtn.addEventListener('click', () => {
+        console.log('Sign In button clicked');
         showAuthCard(true);
-        console.log('Switched to Login form');
-      }
-    });
-
-    userProfile.addEventListener('click', () => {
-      profileDropdown.classList.toggle('hidden');
-    });
-
-    logoutBtn.addEventListener('click', () => {
-      loggedInUser = null;
-      signInBtn.style.display = 'inline-block';
-      getStartedBtn.style.display = 'inline-block';
-      userProfile.style.display = 'none';
-      profileDropdown.classList.add('hidden');
-      // Optionally, clear any auth tokens or session here
-    });
-
-    authForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      messageDiv.textContent = '';
-      const username = usernameInput.value.trim();
-      const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
-
-      if (isLogin) {
-        if (!username || !password) {
-          messageDiv.textContent = 'Please fill in all fields.';
-          return;
-        }
-        // Login
-        try {
-          const response = await fetch('http://localhost:3000/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ usernameOrEmail: username, password }),
-          });
-          const data = await response.json();
-          if (response.ok) {
-            messageDiv.style.color = 'green';
-            messageDiv.textContent = data.message || 'Login successful!';
-            updateUIForLoggedInUser({ username });
-            authCard.classList.add('hidden');
-            // Hide the auth card form after successful login
-            authCard.style.display = 'none';
-            // Add login success logo
-            handleUserAuthentication();
-          } else {
-            messageDiv.style.color = 'red';
-            messageDiv.textContent = data.message || 'Login failed.';
-          }
-        } catch (error) {
-          messageDiv.style.color = 'red';
-          messageDiv.textContent = 'Error connecting to server.';
-        }
-      } else {
-        if (!username || !email || !password) {
-          messageDiv.textContent = 'Please fill in all fields.';
-          return;
-        }
-        // Signup
-        try {
-          const response = await fetch('http://localhost:3000/signup', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, email, password }),
-          });
-          const data = await response.json();
-          if (response.ok) {
-            messageDiv.style.color = 'green';
-            messageDiv.textContent = data.message || 'Signup successful! Please login.';
-            showAuthCard(true);
-            authForm.reset();
-            // Hide the auth card form after successful signup
-            authCard.style.display = 'none';
-            // Add login success logo
-            handleUserAuthentication();
-          } else {
-            messageDiv.style.color = 'red';
-            messageDiv.textContent = data.message || 'Signup failed.';
-          }
-        } catch (error) {
-          messageDiv.style.color = 'red';
-          messageDiv.textContent = 'Error connecting to server.';
-        }
-      }
-    });
-
-    // Close auth card when clicking outside the auth-content
-    authCard.addEventListener('click', (e) => {
-      if (e.target === authCard) {
-        authCard.classList.add('hidden');
-      }
-    });
-
-    // Add click event to cart icon to navigate to cart.html
-    const cartIcon = document.getElementById('cart-icon');
-    if (cartIcon) {
-      cartIcon.style.cursor = 'pointer';
-      cartIcon.addEventListener('click', () => {
-        console.log('Cart icon clicked, navigating to cart.html');
-        window.location.href = 'cart.html';
       });
-    }
+
+      getStartedBtn.addEventListener('click', () => {
+        console.log('Get Started button clicked');
+        showAuthCard(false);
+      });
+
+      toggleLink.addEventListener('click', () => {
+        console.log('Toggle link clicked. Current isLogin:', isLogin);
+        if (isLogin) {
+          showAuthCard(false);
+          console.log('Switched to Sign Up form');
+        } else {
+          showAuthCard(true);
+          console.log('Switched to Login form');
+        }
+      });
+
+      userProfile.addEventListener('click', () => {
+        profileDropdown.classList.toggle('hidden');
+      });
+
+      logoutBtn.addEventListener('click', () => {
+        loggedInUser = null;
+        signInBtn.style.display = 'inline-block';
+        getStartedBtn.style.display = 'inline-block';
+        userProfile.style.display = 'none';
+        profileDropdown.classList.add('hidden');
+        // Optionally, clear any auth tokens or session here
+      });
+
+      authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        messageDiv.textContent = '';
+        const username = usernameInput.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        if (isLogin) {
+          if (!username || !password) {
+            messageDiv.textContent = 'Please fill in all fields.';
+            return;
+          }
+          // Login
+          try {
+            const response = await fetch('http://localhost:3000/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ usernameOrEmail: username, password }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+              messageDiv.style.color = 'green';
+              messageDiv.textContent = data.message || 'Login successful!';
+              updateUIForLoggedInUser({ username });
+              authCard.classList.add('hidden');
+              // Hide the auth card form after successful login
+              // authCard.style.display = 'none';
+              // Add login success logo
+              handleUserAuthentication();
+            } else {
+              messageDiv.style.color = 'red';
+              messageDiv.textContent = data.message || 'Login failed.';
+            }
+          } catch (error) {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = 'Error connecting to server.';
+          }
+        } else {
+          if (!username || !email || !password) {
+            messageDiv.textContent = 'Please fill in all fields.';
+            return;
+          }
+          // Signup
+          try {
+            const response = await fetch('http://localhost:3000/signup', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username, email, password }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+              messageDiv.style.color = 'green';
+              messageDiv.textContent = data.message || 'Signup successful! Please login.';
+              showAuthCard(true);
+              authForm.reset();
+              // Hide the auth card form after successful signup
+              // authCard.style.display = 'none';
+              // Add login success logo
+              handleUserAuthentication();
+            } else {
+              messageDiv.style.color = 'red';
+              messageDiv.textContent = data.message || 'Signup failed.';
+            }
+          } catch (error) {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = 'Error connecting to server.';
+          }
+        }
+      });
+
+      // Close auth card when clicking outside the auth-content
+      authCard.addEventListener('click', (e) => {
+        if (e.target === authCard) {
+          authCard.classList.add('hidden');
+        }
+      });
+
+      // Add click event to cart icon to navigate to cart.html
+      const cartIcon = document.getElementById('cart-icon');
+      if (cartIcon) {
+        cartIcon.style.cursor = 'pointer';
+        cartIcon.addEventListener('click', () => {
+          console.log('Cart icon clicked, navigating to cart.html');
+          window.location.href = 'cart.html';
+        });
+      }
+    });
   </script>
 </body>
 </html>

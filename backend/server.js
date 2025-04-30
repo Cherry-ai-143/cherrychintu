@@ -42,7 +42,9 @@ app.post("/signup", async (req, res) => {
       password: hashedPassword,
     });
     await newUser.save();
-    res.status(201).json({ message: "User registered successfully" });
+    res
+      .status(201)
+      .json({ message: "User registered successfully", userId: newUser._id });
   } catch (error) {
     console.error("Signup error:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -66,7 +68,13 @@ app.post("/login", async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    res.status(200).json({ message: "Login successful" });
+    res
+      .status(200)
+      .json({
+        message: "Login successful",
+        userId: user._id,
+        username: user.username,
+      });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -169,6 +177,17 @@ app.get("/toy-products", async (req, res) => {
     res.status(200).json(products);
   } catch (error) {
     console.error("Get toy products error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Get electronics products - Added missing route
+app.get("/electronics-products", async (req, res) => {
+  try {
+    const products = await ElectronicsProduct.find({});
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Get electronics products error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
